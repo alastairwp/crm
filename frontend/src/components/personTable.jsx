@@ -9,13 +9,13 @@ library.add(faTrash, faEdit);
 
 export default class PersonTable extends Component {
   columns = [
-    //{ path: "firstName", label: "First name" },
-    //{ path: "lastName", label: "Last name" },
-    {
-      key: "fullname",
-      content: (person) => `${person.firstName} ${person.lastName}`,
-      label: "Full name",
-    },
+    //{
+    //  key: "fullname",
+    //  content: (person) => `${person.firstName} ${person.lastName}`,
+    //  label: "Full name",
+    //},
+    { path: "firstName", label: "First name" },
+    { path: "lastName", label: "Last name" },
     { path: "role", label: "Role" },
     { path: "organisation", label: "Organisation" },
     { path: "department", label: "Department" },
@@ -41,11 +41,15 @@ export default class PersonTable extends Component {
   ];
 
   render() {
-    const { persons } = this.props;
+    const { persons, sortColumn, onSort } = this.props;
 
     return (
       <table className="table">
-        <TableHeader columns={this.columns} />
+        <TableHeader
+          columns={this.columns}
+          sortColumn={sortColumn}
+          onSort={onSort}
+        />
         <TableBody
           persons={persons}
           columns={this.columns}
