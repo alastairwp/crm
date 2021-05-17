@@ -1,48 +1,56 @@
 import React, { Component } from "react";
-import axios from "axios";
 import TableHeader from "./common/tableHeader";
 import TableBody from "./common/tableBody";
+import { Link } from "react-router-dom";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+library.add(faTrash, faEdit);
 
 export default class PersonTable extends Component {
   columns = [
-    { path: "firstName", label: "First name" },
-    { path: "lastName", label: "Last name" },
+    //{ path: "firstName", label: "First name" },
+    //{ path: "lastName", label: "Last name" },
+    {
+      key: "fullname",
+      content: (person) => `${person.firstName} ${person.lastName}`,
+      label: "Full name",
+    },
     { path: "role", label: "Role" },
     { path: "organisation", label: "Organisation" },
     { path: "department", label: "Department" },
+    {
+      key: "edit",
+      content: (person) => (
+        <Link to={`/person/edit/${person._id}`}>
+          <FontAwesomeIcon icon="edit" />
+        </Link>
+      ),
+    },
+    {
+      key: "delete",
+      content: (person) => (
+        <button
+          style={{ padding: "0", border: "none", background: "none" }}
+          onClick={() => this.props.onDelete(person._id)}
+        >
+          <FontAwesomeIcon icon="trash" />
+        </button>
+      ),
+    },
   ];
 
-  state = {
-    persons: [],
-  };
-
-  getAllUsers() {
-    axios.get(`http://localhost:5000/api/person`).then((res) => {
-      const persons = res.data;
-      this.setState({ persons });
-    });
-  }
-
-  componentDidMount() {
-    this.getAllUsers();
-  }
-
-  handleDelete = async (personId) => {
-    await axios
-      .delete(`http://localhost:5000/api/person/${personId}`)
-      .then((res) => {
-        console.log(res.data.deletedCount + " person(s) deleted successfully");
-      });
-    this.getAllUsers();
-  };
-
   render() {
-    const persons = this.state.persons;
+    const { persons } = this.props;
 
     return (
       <table className="table">
         <TableHeader columns={this.columns} />
-        <TableBody persons={persons} onDelete={this.handleDelete} />
+        <TableBody
+          persons={persons}
+          columns={this.columns}
+          onDelete={this.handleDelete}
+        />
       </table>
     );
   }

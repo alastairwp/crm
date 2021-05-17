@@ -21,6 +21,7 @@ class EditPersonForm extends Component {
       id: "",
       firstName: "",
       lastName: "",
+      jobTitle: "",
       role: "",
       organisation: "",
       department: "",

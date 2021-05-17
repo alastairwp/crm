@@ -7,10 +7,11 @@ class NewPersonForm extends Component {
   inputFields = [
     { name: "firstName", label: "First name", type: "text" },
     { name: "lastName", label: "Last name", type: "text" },
+    { name: "jobTitle", label: "Job Title", type: "text" },
     { name: "role", label: "Role", type: "text" },
     { name: "organisation", label: "Organisation", type: "Text" },
     { name: "department", label: "Department", type: "text" },
-    { name: "email", label: "Email", type: "text" },
+    { name: "email", label: "Email", type: "email" },
     { name: "phoneWork", label: "Phone (work)", type: "text" },
     { name: "phoneMobile", label: "Phone (mob)", type: "text" },
   ];
@@ -21,6 +22,7 @@ class NewPersonForm extends Component {
       id: "",
       firstName: "",
       lastName: "",
+      jobTitle: "",
       role: "",
       organisation: "",
       department: "",

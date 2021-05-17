@@ -16,3 +16,8 @@ code {
   width: 390px;
   margin-left: 15px;
 }
+
+.person-table-container {
+  margin-left: 15px;
+  width: 90%;
+}

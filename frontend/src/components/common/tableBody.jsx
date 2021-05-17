@@ -1,29 +1,30 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import _ from "lodash";
 
 class TableBody extends Component {
+  renderCell = (person, column) => {
+    if (column.content) {
+      return column.content(person);
+    } else {
+      return _.get(person, column.path);
+    }
+  };
+
+  columnKey = (person, column) => {
+    return person._id + (column.path || column.key);
+  };
+
   render() {
-    const { persons, onDelete } = this.props;
+    const { persons, columns } = this.props;
     return (
       <tbody>
-        {persons.map((p) => (
-          <tr key={p._id}>
-            <td>{p.firstName}</td>
-            <td>{p.lastName}</td>
-            <td>{p.role}</td>
-            <td>{p.organisation}</td>
-            <td>{p.department}</td>
-            <td>
-              <Link className="btn btn-primary" to={`/person/edit/${p._id}`}>
-                Edit
-              </Link>
-              <button
-                className="btn btn-danger"
-                onClick={() => onDelete(p._id)}
-              >
-                Delete
-              </button>
-            </td>
+        {persons.map((person) => (
+          <tr key={person._id}>
+            {columns.map((column) => (
+              <td key={this.columnKey(person, column)}>
+                {this.renderCell(person, column)}
+              </td>
+            ))}
           </tr>
         ))}
       </tbody>

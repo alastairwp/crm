@@ -6,7 +6,7 @@ class TableHeader extends Component {
       <thead>
         <tr>
           {this.props.columns.map((column) => (
-            <th scope="col" key={column.path}>
+            <th scope="col" key={column.path || column.key}>
               {column.label}
             </th>
           ))}
