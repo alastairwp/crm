@@ -1,11 +1,7 @@
 import React, { Component } from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSortUp,
-  faSortDown,
-  faSort,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
 library.add(faSortUp, faSortDown);
 
 class TableHeader extends Component {
