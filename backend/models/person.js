@@ -10,6 +10,7 @@ const personSchema = new mongoose.Schema({
   email: String,
   phoneWork: String,
   phoneMobile: String,
+  location: String,
 });
 
 module.exports = mongoose.model("Person", personSchema);

@@ -1,24 +1,13 @@
 import React, { Component } from "react";
-import axios from "axios";
 import InputField from "./common/inputField";
 import "../index.css";
+import { updatePerson, getPerson } from "../utils/personAPI";
 
 class EditPersonForm extends Component {
-  inputFields = [
-    { name: "firstName", label: "First name", type: "text" },
-    { name: "lastName", label: "Last name", type: "text" },
-    { name: "role", label: "Role", type: "text" },
-    { name: "organisation", label: "Organisation", type: "Text" },
-    { name: "department", label: "Department", type: "text" },
-    { name: "email", label: "Email", type: "text" },
-    { name: "phoneWork", label: "Phone (work)", type: "text" },
-    { name: "phoneMobile", label: "Phone (mob)", type: "text" },
-  ];
-
   constructor(props) {
     super(props);
     this.state = {
-      id: "",
+      _id: "",
       firstName: "",
       lastName: "",
       jobTitle: "",
@@ -28,20 +17,29 @@ class EditPersonForm extends Component {
       email: "",
       phoneWork: "",
       phoneMobile: "",
+      location: "",
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
+  componentDidMount = async () => {
+    this.getUser();
+  };
+
+  getUser() {
+    const personId = this.props.match.params.id;
+    getPerson(personId, (res) => {
+      this.setState(res.data);
+    });
+  }
+
   onSubmit = async (e) => {
     e.preventDefault();
     const updatedPerson = this.state;
+    updatePerson(updatedPerson);
+    this.props.history.push("/person/all");
     console.log("to be updated: " + this.state);
-    await axios
-      .patch(`http://localhost:5000/api/person/${this.state.id}`, updatedPerson)
-      .then((res) => {
-        this.props.history.push("/person/all");
-      });
   };
 
   handleInputChange(e) {
@@ -52,30 +50,13 @@ class EditPersonForm extends Component {
     });
   }
 
-  componentDidMount = async () => {
-    const personId = this.props.match.params.id;
-    await axios
-      .get(`http://localhost:5000/api/person/${personId}`)
-      .then((res) => {
-        this.setState({
-          id: res.data._id,
-          firstName: res.data.firstName,
-          lastName: res.data.lastName,
-          role: res.data.role,
-          organisation: res.data.organisation,
-          department: res.data.department,
-          email: res.data.email,
-          phoneWork: res.data.phoneWork,
-          phoneMobile: res.data.phoneMobile,
-        });
-      });
-  };
-
   render() {
+    const { profileFields } = this.props;
+
     return (
       <form>
         <div className="input-container">
-          {this.inputFields.map((f) => (
+          {profileFields.map((f) => (
             <InputField
               key={f.name}
               name={f.name}

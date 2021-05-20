@@ -1,18 +1,20 @@
 import React, { Component } from "react";
 import PersonTable from "../personTable";
-import axios from "axios";
 import Dropdown from "../common/dropdown";
 import Pagination from "../common/pagination";
 import ItemCounter from "../common/itemCounter";
 import { paginate } from "../../utils/paginate";
+import { getAllPersons, deletePerson } from "../../utils/personAPI";
 import _ from "lodash";
+import PageSizeDropdown from "../common/pageSizeDropdown";
 
 class People extends Component {
   state = {
     persons: [],
-    pageSize: 10,
+    pageSize: 25,
     currentPage: 1,
     sortColumn: { path: "firstName", order: "asc" },
+    pageSizes: [10, 25, 50, 100],
   };
 
   componentDidMount() {
@@ -20,20 +22,15 @@ class People extends Component {
   }
 
   handleDelete = async (personId) => {
-    await axios
-      .delete(`http://localhost:5000/api/person/${personId}`)
-      .then((res) => {
-        console.log(res.data.deletedCount + " person(s) deleted successfully");
-      });
+    deletePerson(personId);
     this.getAllUsers();
   };
 
-  getAllUsers() {
-    axios.get(`http://localhost:5000/api/person`).then((res) => {
-      const persons = res.data;
-      this.setState({ persons });
+  getAllUsers = () => {
+    getAllPersons((res) => {
+      this.setState({ persons: res.data });
     });
-  }
+  };
 
   handleSort = (sortColumn) => {
     this.setState({ sortColumn });
@@ -43,44 +40,84 @@ class People extends Component {
     this.setState({ currentPage: page });
   };
 
+  handlePageSizeSelect = (pageSize) => {
+    this.setState({ pageSize: pageSize });
+  };
+
   handleOrgSelect = (org) => {
-    this.setState({ selectedOrg: org, currentPage: 1 });
+    if (org.organisation === "All organisations") {
+      this.setState({ selectedDept: undefined });
+    }
+
+    this.setState({ selectedOrg: org.organisation, currentPage: 1 });
+  };
+
+  handleDeptSelect = (org) => {
+    this.setState({ selectedDept: org.department, currentPage: 1 });
   };
 
   getUniqueOrgs = (persons) => {
-    const Orgs = [];
     const uniqueOrgs = [];
+    uniqueOrgs.push({ organisation: "All organisations" });
     persons.forEach((person) => {
-      const findOrg = Orgs.find((x) => x.organisation === person.organisation);
+      const findOrg = uniqueOrgs.find(
+        (x) => x.organisation === person.organisation
+      );
       if (!findOrg) {
-        Orgs.push(person);
-        uniqueOrgs.push(person.organisation);
+        uniqueOrgs.push(person);
       }
     });
     return uniqueOrgs;
   };
 
+  getUniqueDepts = (persons) => {
+    const uniqueDepts = [];
+    uniqueDepts.push({ department: "All departments" });
+    persons.forEach((person) => {
+      const findDept = uniqueDepts.find(
+        (x) => x.department === person.department
+      );
+      if (!findDept) {
+        uniqueDepts.push(person);
+      }
+    });
+    return uniqueDepts;
+  };
+
   render() {
-    const { persons, sortColumn, pageSize, currentPage, selectedOrg } =
-      this.state;
+    const {
+      persons,
+      sortColumn,
+      pageSize,
+      currentPage,
+      selectedOrg,
+      selectedDept,
+      pageSizes,
+    } = this.state;
     const uniqueOrgs = this.getUniqueOrgs(persons);
+
     if (persons.length === 0)
       return <p>There are no people in the CRM database</p>;
 
-    // Filter
+    // Filters
 
     const filteredByOrg =
       selectedOrg && selectedOrg !== "All organisations"
         ? persons.filter((person) => person.organisation === selectedOrg)
         : persons;
 
+    const filteredByDept =
+      selectedDept && selectedDept !== "All departments"
+        ? filteredByOrg.filter((person) => person.department === selectedDept)
+        : undefined;
+
     // Sort
     const sorted = _.orderBy(
-      filteredByOrg,
+      filteredByDept === undefined ? filteredByOrg : filteredByDept,
       [sortColumn.path],
       [sortColumn.order]
     );
-
+    const uniqueDepts = this.getUniqueDepts(filteredByOrg);
     // Paginate
     const pagedPersons = paginate(sorted, currentPage, pageSize);
 
@@ -88,26 +125,54 @@ class People extends Component {
       <div className="container">
         <div className="row">
           <div className="col-2">
+            <h5>Filters</h5>
             <Dropdown
+              type="organisation"
+              placeholderText="Select organisation"
               onItemSelect={this.handleOrgSelect}
               selectedOrg={this.state.selectedOrg}
               uniqueOrgs={uniqueOrgs}
             />
+            <Dropdown
+              type="department"
+              placeholderText="Select department"
+              onItemSelect={this.handleDeptSelect}
+              selectedOrg={this.state.selectedDept}
+              uniqueOrgs={uniqueDepts}
+            />
           </div>
           <div className="col-10">
-            <PersonTable
-              onDelete={this.handleDelete}
-              persons={pagedPersons}
-              sortColumn={sortColumn}
-              onSort={this.handleSort}
-            />
-            <ItemCounter itemsCount={filteredByOrg.length} />
-            <Pagination
-              itemsCount={filteredByOrg.length}
-              pageSize={pageSize}
-              onPageChange={this.handlePageChange}
-              currentPage={currentPage}
-            />
+            <div className="row">
+              <PersonTable
+                onDelete={this.handleDelete}
+                persons={pagedPersons}
+                sortColumn={sortColumn}
+                onSort={this.handleSort}
+              />
+            </div>
+
+            <div className="container">
+              <div className="row">
+                <div className="col">
+                  <ItemCounter itemsCount={filteredByOrg.length} />
+                </div>
+                <div className="col">
+                  <Pagination
+                    itemsCount={filteredByOrg.length}
+                    pageSize={pageSize}
+                    onPageChange={this.handlePageChange}
+                    currentPage={currentPage}
+                  />
+                </div>
+                <div className="col">
+                  <PageSizeDropdown
+                    pageSizes={pageSizes}
+                    pageSize={pageSize}
+                    onItemSelect={this.handlePageSizeSelect}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

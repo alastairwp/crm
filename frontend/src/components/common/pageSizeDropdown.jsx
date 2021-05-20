@@ -1,11 +1,9 @@
 import React from "react";
 
-const Dropdown = (props) => {
-  const { uniqueOrgs, selectedOrg, onItemSelect, placeholderText, type } =
-    props;
-
+const PageSizeDropdown = (props) => {
+  const { pageSizes, pageSize, onItemSelect } = props;
   return (
-    <div className="dropdown filter-dropdown">
+    <div className="dropdown" style={{ textAlign: "right" }}>
       <button
         className="btn btn-secondary dropdown-toggle"
         type="button"
@@ -13,13 +11,13 @@ const Dropdown = (props) => {
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
-        {selectedOrg ? selectedOrg : placeholderText}
+        {pageSize}
       </button>
       <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-        {uniqueOrgs.map((org) => (
-          <li key={org._id || org[type]} onClick={() => onItemSelect(org)}>
+        {pageSizes.map((page) => (
+          <li key={page} onClick={() => onItemSelect(page)}>
             <a className="dropdown-item" href="#/">
-              {org[type]}
+              {page}
             </a>
           </li>
         ))}
@@ -28,4 +26,4 @@ const Dropdown = (props) => {
   );
 };
 
-export default Dropdown;
+export default PageSizeDropdown;

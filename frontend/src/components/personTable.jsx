@@ -9,13 +9,20 @@ library.add(faTrash, faEdit);
 
 export default class PersonTable extends Component {
   columns = [
-    //{
-    //  key: "fullname",
-    //  content: (person) => `${person.firstName} ${person.lastName}`,
-    //  label: "Full name",
-    //},
-    { path: "firstName", label: "First name" },
-    { path: "lastName", label: "Last name" },
+    {
+      key: "firstName",
+      label: "First name",
+      content: (person) => (
+        <Link to={`/person/profile/${person._id}`}>{person.firstName}</Link>
+      ),
+    },
+    {
+      key: "lastName",
+      label: "Last name",
+      content: (person) => (
+        <Link to={`/person/profile/${person._id}`}>{person.lastName}</Link>
+      ),
+    },
     { path: "role", label: "Role" },
     { path: "organisation", label: "Organisation" },
     { path: "department", label: "Department" },

@@ -1,26 +1,21 @@
 import React, { Component } from "react";
 
-class InputField extends Component {
+class EmailInputField extends Component {
   render() {
-    const { name, label, type, onChange, value } = this.props;
-    console.log(type);
+    const { name, label, onChange, value } = this.props;
     return (
       <div className="mb-3 row">
         <label htmlFor={name} className="col-sm-3 col-form-label">
           {label}
         </label>
         <div className="col-sm-10">
-          <div className="input-group">
-            {type === "email" ? (
-              <span class="input-group-text" id="inputGroupPrepend">
-                @
-              </span>
-            ) : (
-              ""
-            )}
+          <div className="input-group has-validation">
+            <span class="input-group-text" id="inputGroupPrepend">
+              @
+            </span>
             <input
               name={name}
-              type={type}
+              type="email"
               className="form-control"
               id={name}
               value={value}
@@ -28,7 +23,9 @@ class InputField extends Component {
               aria-describedby="inputGroupPrepend"
               required
             />
-            <div className="invalid-feedback">Field is required</div>
+            <div className="invalid-feedback">
+              Please enter an email address.
+            </div>
           </div>
         </div>
       </div>

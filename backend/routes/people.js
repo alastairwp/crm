@@ -97,6 +97,7 @@ router.patch("/:id", async (req, res) => {
           email: req.body.email,
           phoneWork: req.body.phoneWork,
           phoneMobile: req.body.phoneMobile,
+          location: req.body.location,
         },
       }
     );

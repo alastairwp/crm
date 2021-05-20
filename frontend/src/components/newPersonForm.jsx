@@ -4,18 +4,6 @@ import InputField from "./common/inputField";
 import "../index.css";
 
 class NewPersonForm extends Component {
-  inputFields = [
-    { name: "firstName", label: "First name", type: "text" },
-    { name: "lastName", label: "Last name", type: "text" },
-    { name: "jobTitle", label: "Job Title", type: "text" },
-    { name: "role", label: "Role", type: "text" },
-    { name: "organisation", label: "Organisation", type: "Text" },
-    { name: "department", label: "Department", type: "text" },
-    { name: "email", label: "Email", type: "email" },
-    { name: "phoneWork", label: "Phone (work)", type: "text" },
-    { name: "phoneMobile", label: "Phone (mob)", type: "text" },
-  ];
-
   constructor(props) {
     super(props);
     this.state = {
@@ -29,6 +17,7 @@ class NewPersonForm extends Component {
       email: "",
       phoneWork: "",
       phoneMobile: "",
+      location: "",
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -36,7 +25,7 @@ class NewPersonForm extends Component {
 
   onSubmit = async (e) => {
     const newPerson = this.state;
-    e.preventDefault();
+    //e.preventDefault();
     await axios
       .post("http://localhost:5000/api/person", newPerson)
       .then((res) => {
@@ -53,10 +42,11 @@ class NewPersonForm extends Component {
   }
 
   render() {
+    const { profileFields } = this.props;
     return (
-      <form>
+      <form class="row g-3">
         <div className="input-container">
-          {this.inputFields.map((f) => (
+          {profileFields.map((f) => (
             <InputField
               key={f.name}
               name={f.name}

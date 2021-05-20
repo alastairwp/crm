@@ -17,7 +17,33 @@ code {
   margin-left: 15px;
 }
 
-.person-table-container {
-  margin-left: 15px;
-  width: 90%;
+.filter-dropdown {
+  margin-bottom: 10px;
+}
+
+.profile-container {
+  border-radius: 10px;
+  background-color: #f2f2f2;
+  padding: 10px;
+  margin: 20px;
+  max-width: 380px;
+}
+
+.profile-container-row {
+  line-height: 2em;
+}
+
+.profile-container-cell {
+  padding-left: 10px;
+  border-bottom: 1px solid lightgray;
+}
+
+.table-footer-left {
+  text-align: left;
+  border: 1px solid lightgray;
+}
+
+.table-footer-right {
+  text-align: right;
+  border: 1px solid lightgray;
 }
