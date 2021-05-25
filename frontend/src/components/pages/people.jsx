@@ -22,7 +22,13 @@ class People extends Component {
   }
 
   handleDelete = async (personId) => {
-    deletePerson(personId);
+    try {
+      deletePerson(personId);
+      console.log("Deleted user with ID: " + personId);
+    } catch (error) {
+      console.log("Error deleting user");
+    }
+
     this.getAllUsers();
   };
 

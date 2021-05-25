@@ -1,24 +1,12 @@
 import React, { Component } from "react";
 import InputField from "./common/inputField";
 import "../index.css";
-import { updatePerson, getPerson } from "../utils/personAPI";
+import { updatePerson, getPersonById } from "../utils/personAPI";
 
 class EditPersonForm extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      _id: "",
-      firstName: "",
-      lastName: "",
-      jobTitle: "",
-      role: "",
-      organisation: "",
-      department: "",
-      email: "",
-      phoneWork: "",
-      phoneMobile: "",
-      location: "",
-    };
+    this.state = {};
 
     this.handleInputChange = this.handleInputChange.bind(this);
   }
@@ -29,7 +17,7 @@ class EditPersonForm extends Component {
 
   getUser() {
     const personId = this.props.match.params.id;
-    getPerson(personId, (res) => {
+    getPersonById(personId, (res) => {
       this.setState(res.data);
     });
   }

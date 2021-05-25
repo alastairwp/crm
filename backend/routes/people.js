@@ -19,7 +19,7 @@ db.once("open", function () {
   console.log("Connected to MongoDB...");
 });
 
-function createCourse(req) {
+function createPerson(req) {
   const person = new Person({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -34,27 +34,36 @@ function createCourse(req) {
   const result = person.save(function (err) {
     if (err) return console.error(err);
   });
-  console.log(result);
 }
 
 function getPeople() {
   return Person.find();
 }
 
-function getPerson(personId) {
+function getPersonById(personId) {
   return Person.findById(personId);
 }
 
-// return all the people in the DB
+function getPersonByName(firstname, lastname) {
+  return Person.findOne({ firstName: firstname, lastName: lastname });
+}
+
 router.get("/", async (req, res) => {
-  const people = await getPeople();
-  res.json(people);
+  const { firstName, lastName } = req.query;
+
+  if (firstName && lastName) {
+    const personByName = await getPersonByName(firstName, lastName);
+    res.json(personByName);
+  } else {
+    const people = await getPeople();
+    res.json(people);
+  }
 });
 
 // get a person by their ID
 router.get("/:id", async (req, res) => {
   try {
-    const person = await getPerson(req.params.id);
+    const person = await getPersonById(req.params.id);
     res.json(person);
   } catch (err) {
     res.status(404).send("The person with the given ID was not found.");
@@ -65,7 +74,7 @@ router.get("/:id", async (req, res) => {
 // create a new person profile
 router.post("/", async (req, res) => {
   try {
-    const newCourse = await createCourse(req);
+    const newCourse = await createPerson(req);
     res.json(newCourse);
   } catch (err) {
     res.status(400).send("There was a problem creating the new user");

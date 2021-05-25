@@ -16,7 +16,7 @@ class App extends Component {
     { name: "role", label: "Role", type: "text" },
     { name: "organisation", label: "Organisation", type: "Text" },
     { name: "department", label: "Department", type: "text" },
-    { name: "email", label: "Email", type: "email" },
+    { name: "email", label: "Email", type: "text" },
     { name: "phoneWork", label: "Phone (work)", type: "text" },
     { name: "phoneMobile", label: "Phone (mob)", type: "text" },
     { name: "location", label: "Location", type: "text" },
@@ -35,7 +35,6 @@ class App extends Component {
                 <EditPersonForm {...props} profileFields={this.profileFields} />
               )}
             ></Route>
-            <Route path="/person/delete/:id" component={People}></Route>
             <Route
               path="/person/profile/:id"
               render={(props) => (

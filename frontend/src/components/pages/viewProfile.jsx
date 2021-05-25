@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ProfileSection from "../profileSection";
-import { getPerson } from "../../utils/personAPI";
+import { getPersonById } from "../../utils/personAPI";
 
 class ViewProfile extends Component {
   constructor(props) {
@@ -27,7 +27,7 @@ class ViewProfile extends Component {
 
   getUser() {
     const personId = this.props.match.params.id;
-    getPerson(personId, (res) => {
+    getPersonById(personId, (res) => {
       this.setState(res.data);
     });
   }
