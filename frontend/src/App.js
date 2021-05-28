@@ -26,7 +26,7 @@ class App extends Component {
     return (
       <React.Fragment>
         <NavBar />
-        <main className="Container">
+        <main className="container-body">
           <Switch>
             <Route path="/person/all" component={People}></Route>
             <Route

@@ -7,11 +7,12 @@ import { paginate } from "../../utils/paginate";
 import { getAllPersons, deletePerson } from "../../utils/personAPI";
 import _ from "lodash";
 import PageSizeDropdown from "../common/pageSizeDropdown";
+import { raiseNotification } from "../../index";
 
 class People extends Component {
   state = {
     persons: [],
-    pageSize: 25,
+    pageSize: 10,
     currentPage: 1,
     sortColumn: { path: "firstName", order: "asc" },
     pageSizes: [10, 25, 50, 100],
@@ -23,19 +24,33 @@ class People extends Component {
 
   handleDelete = async (personId) => {
     try {
-      deletePerson(personId);
-      console.log("Deleted user with ID: " + personId);
-    } catch (error) {
-      console.log("Error deleting user");
+      const res = await deletePerson(personId);
+      if (res.data.deletedCount === 1) {
+        raiseNotification("", "Person was deleted successfully", "success");
+        this.getAllUsers();
+      }
+    } catch (err) {
+      raiseNotification(
+        "Error",
+        `Person could not be deleted: ${err.message}`,
+        "danger"
+      );
     }
-
-    this.getAllUsers();
   };
 
-  getAllUsers = () => {
-    getAllPersons((res) => {
-      this.setState({ persons: res.data });
-    });
+  getAllUsers = async () => {
+    try {
+      const res = await getAllPersons();
+      if (res.status === 200 && res.data !== null) {
+        this.setState({ persons: res.data });
+      }
+    } catch (err) {
+      raiseNotification(
+        "Error",
+        `Person could not get all persons: ${err.message}`,
+        "danger"
+      );
+    }
   };
 
   handleSort = (sortColumn) => {
@@ -128,55 +143,53 @@ class People extends Component {
     const pagedPersons = paginate(sorted, currentPage, pageSize);
 
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-2">
-            <h5>Filters</h5>
-            <Dropdown
-              type="organisation"
-              placeholderText="Select organisation"
-              onItemSelect={this.handleOrgSelect}
-              selectedOrg={this.state.selectedOrg}
-              uniqueOrgs={uniqueOrgs}
-            />
-            <Dropdown
-              type="department"
-              placeholderText="Select department"
-              onItemSelect={this.handleDeptSelect}
-              selectedOrg={this.state.selectedDept}
-              uniqueOrgs={uniqueDepts}
+      <div className="row">
+        <div className="col-2">
+          <h5>Filters</h5>
+          <Dropdown
+            type="organisation"
+            placeholderText="Select organisation"
+            onItemSelect={this.handleOrgSelect}
+            selectedOrg={this.state.selectedOrg}
+            uniqueOrgs={uniqueOrgs}
+          />
+          <Dropdown
+            type="department"
+            placeholderText="Select department"
+            onItemSelect={this.handleDeptSelect}
+            selectedOrg={this.state.selectedDept}
+            uniqueOrgs={uniqueDepts}
+          />
+        </div>
+        <div className="col-10">
+          <div className="row">
+            <PersonTable
+              onDelete={this.handleDelete}
+              persons={pagedPersons}
+              sortColumn={sortColumn}
+              onSort={this.handleSort}
             />
           </div>
-          <div className="col-10">
-            <div className="row">
-              <PersonTable
-                onDelete={this.handleDelete}
-                persons={pagedPersons}
-                sortColumn={sortColumn}
-                onSort={this.handleSort}
-              />
-            </div>
 
-            <div className="container">
-              <div className="row">
-                <div className="col">
-                  <ItemCounter itemsCount={filteredByOrg.length} />
-                </div>
-                <div className="col">
-                  <Pagination
-                    itemsCount={filteredByOrg.length}
-                    pageSize={pageSize}
-                    onPageChange={this.handlePageChange}
-                    currentPage={currentPage}
-                  />
-                </div>
-                <div className="col">
-                  <PageSizeDropdown
-                    pageSizes={pageSizes}
-                    pageSize={pageSize}
-                    onItemSelect={this.handlePageSizeSelect}
-                  />
-                </div>
+          <div className="container-body">
+            <div className="row">
+              <div className="col">
+                <ItemCounter itemsCount={filteredByOrg.length} />
+              </div>
+              <div className="col">
+                <Pagination
+                  itemsCount={filteredByOrg.length}
+                  pageSize={pageSize}
+                  onPageChange={this.handlePageChange}
+                  currentPage={currentPage}
+                />
+              </div>
+              <div className="col">
+                <PageSizeDropdown
+                  pageSizes={pageSizes}
+                  pageSize={pageSize}
+                  onItemSelect={this.handlePageSizeSelect}
+                />
               </div>
             </div>
           </div>

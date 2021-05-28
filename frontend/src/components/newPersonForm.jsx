@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import InputField from "./common/inputField";
 import "../index.css";
 import { newPerson, getPersonByName } from "../utils/personAPI";
+import { raiseNotification } from "../index";
 
 class NewPersonForm extends Component {
   constructor(props) {
@@ -15,23 +16,39 @@ class NewPersonForm extends Component {
     e.preventDefault();
     const { firstName, lastName } = this.state;
     if (firstName && lastName) {
-      getPersonByName({ firstname: firstName, lastname: lastName }, (res) => {
+      const res = await getPersonByName({
+        firstName: firstName,
+        lastName: lastName,
+      });
+
+      if ((res.status === 200) & (res.data !== null)) {
         if (
           res.data.firstName === firstName &&
           res.data.lastName === lastName
         ) {
-          e.preventDefault();
-          console.log(
-            `Can not add new record. Person with name ${firstName} already exists`
+          raiseNotification(
+            "Validation Warning",
+            `Can not add new record. Person with name ${firstName} ${lastName} already exists`,
+            "warning"
           );
-        } else {
-          console.log("add new user");
-          newPerson(this.state);
-          this.props.history.push("/person/all");
         }
-      });
+      } else {
+        const res = await newPerson(this.state);
+        if (res.status === 200 && res.data !== null) {
+          this.props.history.push("/person/all");
+          raiseNotification(
+            "",
+            `New person ${firstName} ${lastName} added successfully`,
+            "success"
+          );
+        }
+      }
     } else {
-      console.log("You must add a minimum of Firstname and Lastname");
+      raiseNotification(
+        "Validation Warning",
+        "You must add a minimum of Firstname and Lastname",
+        "warning"
+      );
     }
   };
 
@@ -46,7 +63,7 @@ class NewPersonForm extends Component {
   render() {
     const { profileFields } = this.props;
     return (
-      <form className="row g-3" style={{ maxWidth: "390px" }}>
+      <form className="row g-3" style={{ maxWidth: "400px" }}>
         <div className="input-container">
           {profileFields.map((f) => (
             <InputField

@@ -49,10 +49,10 @@ function getPersonByName(firstname, lastname) {
 }
 
 router.get("/", async (req, res) => {
-  const { firstName, lastName } = req.query;
-
-  if (firstName && lastName) {
-    const personByName = await getPersonByName(firstName, lastName);
+  const firstname = req.query.firstname;
+  const lastname = req.query.lastname;
+  if (firstname && lastname) {
+    const personByName = await getPersonByName(firstname, lastname);
     res.json(personByName);
   } else {
     const people = await getPeople();

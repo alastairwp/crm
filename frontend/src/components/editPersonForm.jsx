@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import InputField from "./common/inputField";
 import "../index.css";
 import { updatePerson, getPersonById } from "../utils/personAPI";
+import { raiseNotification } from "../index";
 
 class EditPersonForm extends Component {
   constructor(props) {
@@ -15,19 +16,48 @@ class EditPersonForm extends Component {
     this.getUser();
   };
 
-  getUser() {
+  getUser = async () => {
     const personId = this.props.match.params.id;
-    getPersonById(personId, (res) => {
-      this.setState(res.data);
-    });
-  }
+    try {
+      const res = await getPersonById(personId);
+      console.log(res);
+      if (res.status === 200 && res.data !== null) {
+        this.setState(res.data);
+      } else {
+        raiseNotification(
+          "Error",
+          "Could not get user with id: " + personId,
+          "danger"
+        );
+      }
+    } catch (err) {
+      raiseNotification("API Error", "me " + err.message, "danger");
+    }
+  };
 
   onSubmit = async (e) => {
     e.preventDefault();
     const updatedPerson = this.state;
-    updatePerson(updatedPerson);
+    try {
+      const res = await updatePerson(updatedPerson);
+      if (res.status === 200 && res.data !== null) {
+        raiseNotification(
+          "",
+          `Profile '${updatedPerson.firstName} ${updatedPerson.lastName}' was updated successfully`,
+          "success"
+        );
+      } else {
+        raiseNotification(
+          "Error",
+          `Could not update user ${updatePerson.firstName} ${updatePerson.lastName}`,
+          "danger"
+        );
+      }
+    } catch (err) {
+      raiseNotification("API Error", err.message, "danger");
+    }
+
     this.props.history.push("/person/all");
-    console.log("to be updated: " + this.state);
   };
 
   handleInputChange(e) {
@@ -50,7 +80,7 @@ class EditPersonForm extends Component {
               name={f.name}
               label={f.label}
               type={f.type}
-              value={this.state[f.name]}
+              value={this.state[f.name] || ""}
               onChange={this.handleInputChange}
             />
           ))}

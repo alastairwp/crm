@@ -12,6 +12,11 @@ code {
     monospace;
 }
 
+.container-body {
+  width: 100%;
+  padding: 10px;
+}
+
 .input-container {
   width: 390px;
   margin-left: 15px;
